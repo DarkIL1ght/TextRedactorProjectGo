@@ -21,14 +21,6 @@ func bin(words []string, idx int) {
 	}
 }
 
-func up(words []string, idx int) {
-	words[idx] = strings.ToUpper(words[idx])
-}
-
-func low(words []string, idx int) {
-	words[idx] = strings.ToLower(words[idx])
-}
-
 func capWord(words []string, idx int) {
 	if len(words[idx]) == 0 {
 		return
@@ -172,26 +164,37 @@ func detectDQuotes(words []string) []string {
 	return result
 }
 
-func checkword(words []string) []string {
-
-	for index, word := range words {
-		if index == 0 {
+func splitPunct(words []string) []string {
+	var res []string
+	for _, w := range words {
+		if (strings.HasPrefix(w, "(") && strings.HasSuffix(w, ")")) || w == "'" || w == "\"" {
+			res = append(res, w)
 			continue
 		}
-		flag := false
-		runes := []rune(word)
-		for r := range runes {
-			if runes[r] == ',' || runes[r] == '.' || runes[r] == '!' || runes[r] == '?' || runes[r] == ':' || runes[r] == ';' {
-				words[index-1] = words[index-1] + string(runes[r])
-				words[index] = words[index][1:]
+
+		runes := []rune(w)
+		i := 0
+		for i < len(runes) {
+			if isPunct(runes[i]) {
+				j := i
+				for j < len(runes) && isPunct(runes[j]) {
+					j++
+				}
+				res = append(res, string(runes[i:j]))
+				i = j
 			} else {
-				flag = true
-				break
+				j := i
+				for j < len(runes) && !isPunct(runes[j]) {
+					j++
+				}
+				res = append(res, string(runes[i:j]))
+				i = j
 			}
 		}
-		if flag {
-			continue
-		}
 	}
-	return words
+	return res
+}
+
+func isPunct(r rune) bool {
+	return r == '.' || r == ',' || r == '!' || r == '?' || r == ':' || r == ';'
 }

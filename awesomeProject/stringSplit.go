@@ -3,27 +3,29 @@ package main
 func razbiv(data []byte) []string {
 	var slice []string
 	var word []byte
-	insideParen := false
+	level := 0
 
-	for _, f := range data {
+	for _, ch := range data {
 		switch {
-		case f == '(':
-			insideParen = true
-			word = append(word, f)
-		case f == ')' && insideParen:
-			word = append(word, f)
-			slice = append(slice, string(word))
-			word = nil
-			insideParen = false
-		case insideParen:
-			word = append(word, f)
-		case f == ' ':
+		case ch == '(':
+			level++
+			word = append(word, ch)
+		case ch == ')':
+			word = append(word, ch)
+			level--
+			if level == 0 {
+				slice = append(slice, string(word))
+				word = nil
+			}
+		case level > 0:
+			word = append(word, ch)
+		case ch == ' ':
 			if len(word) > 0 {
 				slice = append(slice, string(word))
 				word = nil
 			}
 		default:
-			word = append(word, f)
+			word = append(word, ch)
 		}
 	}
 	if len(word) > 0 {
