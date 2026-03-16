@@ -14,12 +14,12 @@ func main() {
 	}
 
 	words := razbiv(data)
-	words = splitPunct(words)              // отделяем знаки от слов
-	words = applyAllCommands(words)        // команды
-	words = mergeSpecialPunctuation(words) // ?! и ...
-	words = detectQuotes(words)            // одинарные кавычки
-	words = detectDQuotes(words)           // двойные кавычки
-	words = detectTextf(words)             // a/an и приклеивание пунктуации
+	words = splitPunct(words)
+	words = applyAllCommands(words)
+	words = mergeSpecialPunctuation(words)
+	words = detectQuotes(words)
+	words = detectDQuotes(words)
+	words = detectTextf(words)
 	writeText("result.txt", words)
 }
 
@@ -37,6 +37,7 @@ func writeText(filename string, words []string) {
 func detectTextf(words []string) []string {
 	for i := 0; i < len(words); i++ {
 		word := words[i]
+		word = strings.ToLower(word)
 		if (word == "a" || word == "an") && i < len(words)-1 {
 			checkAAn(words, i)
 		}

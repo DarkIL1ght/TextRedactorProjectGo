@@ -42,22 +42,25 @@ func checkAAn(words []string, index int) {
 	}
 	runes := []rune(words[index+1])
 	run := unicode.ToLower(runes[0])
-	if words[index] == "a" {
-		if isVowel(run) {
+	wantAn := isVowel(run)
+
+	switch words[index] {
+	case "a":
+		if wantAn {
 			words[index] = "an"
-			return
-		} else {
-			return
 		}
-
-	} else {
-		if isVowel(run) {
-			return
-		} else {
+	case "A":
+		if wantAn {
+			words[index] = "An"
+		}
+	case "an":
+		if !wantAn {
 			words[index] = "a"
-			return
 		}
-
+	case "An":
+		if !wantAn {
+			words[index] = "A"
+		}
 	}
 
 }

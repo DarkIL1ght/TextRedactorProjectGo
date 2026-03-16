@@ -11,16 +11,36 @@ type Command struct {
 	HasN  bool
 }
 
+func isKnownCommand(cmd string) bool {
+	switch cmd {
+	case "cap", "low", "up", "hex", "bin":
+		return true
+	default:
+		return false
+	}
+}
+
 func parseCommand(word string) (Command, bool) {
 	if !strings.HasPrefix(word, "(") || !strings.HasSuffix(word, ")") {
 		return Command{}, false
 	}
 
-	content := clearity(word)
+	// Allow extra outer parentheses like "((up))" but reject inner parentheses like "(((u)p))".
+	content := word
+	for strings.HasPrefix(content, "(") && strings.HasSuffix(content, ")") && len(content) >= 2 {
+		content = content[1 : len(content)-1]
+	}
+	if strings.ContainsAny(content, "()") {
+		return Command{}, false
+	}
+	content = strings.TrimSpace(content)
 
 	parts := strings.Split(content, ",")
 	cmd := strings.TrimSpace(parts[0])
 	cmd = strings.ToLower(cmd)
+	if !isKnownCommand(cmd) {
+		return Command{}, false
+	}
 	if len(parts) == 1 {
 		return Command{Name: cmd}, true
 	}
