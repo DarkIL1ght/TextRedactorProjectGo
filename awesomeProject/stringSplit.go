@@ -1,7 +1,7 @@
 package main
 
-func isSpace(ch byte) bool {
-	return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t' || ch == '\v' || ch == '\f'
+func isSep(ch byte) bool {
+	return ch == ' ' || ch == '\v' || ch == '\f'
 }
 
 func addWord(words *[]string, buf *[]byte) {
@@ -20,7 +20,30 @@ func razbiv(data []byte) []string {
 	for i < len(data) {
 		ch := data[i]
 
-		if isSpace(ch) {
+		if ch == '\t' {
+			addWord(&words, &buf)
+			words = append(words, "\t")
+			i++
+			continue
+		}
+		if ch == '\r' {
+			addWord(&words, &buf)
+			if i+1 < len(data) && data[i+1] == '\n' {
+				i += 2
+			} else {
+				i++
+			}
+			words = append(words, "\n")
+			continue
+		}
+		if ch == '\n' {
+			addWord(&words, &buf)
+			words = append(words, "\n")
+			i++
+			continue
+		}
+
+		if isSep(ch) {
 			addWord(&words, &buf)
 			i++
 			continue

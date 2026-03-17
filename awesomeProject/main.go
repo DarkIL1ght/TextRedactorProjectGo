@@ -30,9 +30,31 @@ func writeText(filename string, words []string) {
 		return
 	}
 	defer file.Close()
-	file.WriteString(strings.Join(words, " "))
-}
 
+	var b strings.Builder
+	needSpace := false
+
+	for _, w := range words {
+		if w == "\n" {
+			b.WriteByte('\n')
+			needSpace = false
+			continue
+		}
+		if w == "\t" {
+			b.WriteByte('\t')
+			needSpace = false
+			continue
+		}
+
+		if needSpace {
+			b.WriteByte(' ')
+		}
+		b.WriteString(w)
+		needSpace = true
+	}
+
+	file.WriteString(b.String())
+}
 func detectTextf(words []string) []string {
 	for i := 0; i < len(words); i++ {
 		word := words[i]
@@ -44,8 +66,10 @@ func detectTextf(words []string) []string {
 		switch word {
 		case ",", ".", "!", "?", ":", ";", "...", "?!", "!?":
 			if i > 0 {
-				words = combineDot(words, i)
-				i--
+				if words[i-1] != "\n" && words[i-1] != "\t" {
+					words = combineDot(words, i)
+					i--
+				}
 			}
 		}
 	}
