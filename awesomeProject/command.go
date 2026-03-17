@@ -25,7 +25,6 @@ func parseCommand(word string) (Command, bool) {
 		return Command{}, false
 	}
 
-	// Allow extra outer parentheses like "((up))" but reject inner parentheses like "(((u)p))".
 	content := word
 	for strings.HasPrefix(content, "(") && strings.HasSuffix(content, ")") && len(content) >= 2 {
 		content = content[1 : len(content)-1]

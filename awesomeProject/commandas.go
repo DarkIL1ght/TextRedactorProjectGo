@@ -85,19 +85,17 @@ func combineDot(words []string, index int) []string {
 
 func mergeSpecialPunctuation(words []string) []string {
 	for i := 0; i < len(words)-1; i++ {
-		// Проверяем пары "?" и "!"
 		if (words[i] == "?" && words[i+1] == "!") || (words[i] == "!" && words[i+1] == "?") {
 			words[i] = words[i] + words[i+1]
 			words = removeIndex(words, i+1)
-			i-- // после удаления следующий элемент смещается
+			i--
 			continue
 		}
-		// Проверяем три точки подряд
 		if i+2 < len(words) && words[i] == "." && words[i+1] == "." && words[i+2] == "." {
 			words[i] = "..."
-			words = removeIndex(words, i+2) // удаляем третью точку
-			words = removeIndex(words, i+1) // удаляем вторую точку
-			i--                             // после двух удалений остаёмся на том же i (сместилось)
+			words = removeIndex(words, i+2)
+			words = removeIndex(words, i+1)
+			i--
 		}
 	}
 	return words

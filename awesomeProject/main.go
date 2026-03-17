@@ -30,7 +30,6 @@ func writeText(filename string, words []string) {
 		return
 	}
 	defer file.Close()
-
 	file.WriteString(strings.Join(words, " "))
 }
 
