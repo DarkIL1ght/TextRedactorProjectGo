@@ -15,8 +15,8 @@ func main() {
 
 	words := razbiv(data)
 	words = splitPunct(words)
-	words = applyAllCommands(words)
-	words = mergeSpecialPunctuation(words)
+	words = applyCmds(words)
+	words = mergePunct(words)
 	words = detectQuotes(words)
 	words = detectDQuotes(words)
 	words = detectTextf(words)
@@ -35,6 +35,14 @@ func writeText(filename string, words []string) {
 	needSpace := false
 
 	for _, w := range words {
+		if isSpaces(w) {
+			if needSpace {
+				b.WriteByte(' ')
+			}
+			b.WriteString(w)
+			needSpace = false
+			continue
+		}
 		if w == "\n" {
 			b.WriteByte('\n')
 			needSpace = false
@@ -65,11 +73,13 @@ func detectTextf(words []string) []string {
 
 		switch word {
 		case ",", ".", "!", "?", ":", ";", "...", "?!", "!?":
-			if i > 0 {
-				if words[i-1] != "\n" && words[i-1] != "\t" {
-					words = combineDot(words, i)
-					i--
-				}
+			for i > 0 && isSpaces(words[i-1]) {
+				words = removeIndex(words, i-1)
+				i--
+			}
+			if i > 0 && words[i-1] != "\n" && words[i-1] != "\t" {
+				words = combineDot(words, i)
+				i--
 			}
 		}
 	}

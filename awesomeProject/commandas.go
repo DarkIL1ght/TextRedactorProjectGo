@@ -34,13 +34,17 @@ func capWord(words []string, idx int) {
 }
 
 func checkAAn(words []string, index int) {
-	if index+1 >= len(words) {
+	j := index + 1
+	for j < len(words) && isWS(words[j]) {
+		j++
+	}
+	if j >= len(words) {
 		return
 	}
-	if len(words[index+1]) == 0 {
+	if len(words[j]) == 0 {
 		return
 	}
-	runes := []rune(words[index+1])
+	runes := []rune(words[j])
 	run := unicode.ToLower(runes[0])
 	wantAn := isVowel(run)
 
@@ -83,7 +87,7 @@ func combineDot(words []string, index int) []string {
 	return append(words[:index], words[index+1:]...)
 }
 
-func mergeSpecialPunctuation(words []string) []string {
+func mergePunct(words []string) []string {
 	for i := 0; i < len(words)-1; i++ {
 		if (words[i] == "?" && words[i+1] == "!") || (words[i] == "!" && words[i+1] == "?") {
 			words[i] = words[i] + words[i+1]

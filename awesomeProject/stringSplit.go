@@ -1,7 +1,18 @@
 package main
 
 func isSep(ch byte) bool {
-	return ch == ' ' || ch == '\v' || ch == '\f'
+	return ch == '\v' || ch == '\f'
+}
+
+func spacesToken(n int) string {
+	if n <= 0 {
+		return ""
+	}
+	b := make([]byte, n)
+	for i := range b {
+		b[i] = ' '
+	}
+	return string(b)
 }
 
 func addWord(words *[]string, buf *[]byte) {
@@ -19,6 +30,24 @@ func razbiv(data []byte) []string {
 	i := 0
 	for i < len(data) {
 		ch := data[i]
+		if ch == ' ' {
+			addWord(&words, &buf)
+
+			start := i
+			for i < len(data) && data[i] == ' ' {
+				i++
+			}
+			n := i - start
+			if n >= 2 {
+				canAssumeBase := len(words) > 0 && !isWS(words[len(words)-1])
+				if canAssumeBase {
+					words = append(words, spacesToken(n-1))
+				} else {
+					words = append(words, spacesToken(n))
+				}
+			}
+			continue
+		}
 
 		if ch == '\t' {
 			addWord(&words, &buf)

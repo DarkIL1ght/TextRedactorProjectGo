@@ -11,6 +11,38 @@ type Command struct {
 	HasN  bool
 }
 
+func isSpaces(tok string) bool {
+	if tok == "" {
+		return false
+	}
+	for i := 0; i < len(tok); i++ {
+		if tok[i] != ' ' {
+			return false
+		}
+	}
+	return true
+}
+
+func isWS(tok string) bool {
+	return isSpaces(tok) || tok == "\n" || tok == "\t"
+}
+
+func isPunctTok(tok string) bool {
+	if tok == "" {
+		return false
+	}
+	for _, r := range tok {
+		if !isPunct(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func skipForCmd(tok string) bool {
+	return isWS(tok) || tok == "'" || tok == "\"" || isPunctTok(tok)
+}
+
 func isKnownCommand(cmd string) bool {
 	switch cmd {
 	case "cap", "low", "up", "hex", "bin":
@@ -71,7 +103,7 @@ func clearity(word string) string {
 	return string(newcommand)
 }
 
-func applyAllCommands(words []string) []string {
+func applyCmds(words []string) []string {
 	for i := 0; i < len(words); i++ {
 		cmd, ok := parseCommand(words[i])
 		if !ok {
@@ -90,18 +122,28 @@ func applyCommand(words []string, index int, cmd Command) {
 		count = cmd.Count
 	}
 
-	for j := 1; j <= count && index-j >= 0; j++ {
+	pos := index - 1
+	applied := 0
+	for applied < count && pos >= 0 {
+		for pos >= 0 && skipForCmd(words[pos]) {
+			pos--
+		}
+		if pos < 0 {
+			break
+		}
 		switch cmd.Name {
 		case "cap":
-			capWord(words, index-j)
+			capWord(words, pos)
 		case "low":
-			words[index-j] = strings.ToLower(words[index-j])
+			words[pos] = strings.ToLower(words[pos])
 		case "up":
-			words[index-j] = strings.ToUpper(words[index-j])
+			words[pos] = strings.ToUpper(words[pos])
 		case "hex":
-			hex(words, index-j)
+			hex(words, pos)
 		case "bin":
-			bin(words, index-j)
+			bin(words, pos)
 		}
+		applied++
+		pos--
 	}
 }
