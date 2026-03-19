@@ -65,14 +65,13 @@ func writeText(filename string, words []string) {
 }
 func detectTextf(words []string) []string {
 	for i := 0; i < len(words); i++ {
-		word := words[i]
-		word = strings.ToLower(word)
-		if (word == "a" || word == "an") && i < len(words)-1 {
+		tok := words[i]
+		low := strings.ToLower(tok)
+		if (low == "a" || low == "an") && i < len(words)-1 {
 			checkAAn(words, i)
 		}
 
-		switch word {
-		case ",", ".", "!", "?", ":", ";", "...", "?!", "!?":
+		if isPunctTok(tok) {
 			for i > 0 && isSpaces(words[i-1]) {
 				words = removeIndex(words, i-1)
 				i--
